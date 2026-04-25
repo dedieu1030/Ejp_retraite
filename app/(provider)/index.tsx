@@ -131,7 +131,8 @@ export default function ProviderSubmissionsScreen() {
           }}
           activeOpacity={0.8}
         >
-          <AddSquare color={Colors.primary} size={64} variant="Linear" />
+          <View style={{ position: 'absolute', width: 32, height: 32, backgroundColor: '#fff', borderRadius: 4 }} />
+          <AddSquare color={Colors.primary} size={64} variant="Bold" />
         </TouchableOpacity>
       </View>
       <CreateServiceModal 
