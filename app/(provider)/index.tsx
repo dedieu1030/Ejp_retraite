@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-import { User, Briefcase, Location, Trash } from 'iconsax-react-native';
+import { User, Briefcase, Location, Trash, Add } from 'iconsax-react-native';
 import { PROPOSALS } from '../../constants/Proposals';
 
 export default function ProviderSubmissionsScreen() {

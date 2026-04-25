@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { Settings, LayoutGrid } from 'lucide-react-native';
+import { Setting2, Category } from 'iconsax-react-native';
 
 export default function ClientLayout() {
   return (
@@ -16,14 +16,14 @@ export default function ClientLayout() {
         name="index" 
         options={{ 
           title: 'Services', 
-          tabBarIcon: ({ color }) => <LayoutGrid color={color} size={24} /> 
+          tabBarIcon: ({ color }) => <Category color={color} size={24} variant="Linear" /> 
         }} 
       />
       <Tabs.Screen 
         name="settings" 
         options={{ 
           title: 'Paramètres', 
-          tabBarIcon: ({ color }) => <Settings color={color} size={24} /> 
+          tabBarIcon: ({ color }) => <Setting2 color={color} size={24} variant="Linear" /> 
         }} 
       />
     </Tabs>

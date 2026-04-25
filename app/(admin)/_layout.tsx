@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { Settings, Users, ShieldAlert } from 'lucide-react-native';
+import { Setting2, ShieldTick, Profile2User } from 'iconsax-react-native';
 
 export default function AdminLayout() {
   return (
@@ -16,27 +16,28 @@ export default function AdminLayout() {
         name="index" 
         options={{ 
           title: 'Gestion', 
-          tabBarIcon: ({ color }) => <ShieldAlert color={color} size={24} /> 
+          tabBarIcon: ({ color }) => <ShieldTick color={color} size={24} variant="Linear" /> 
         }} 
       />
       <Tabs.Screen 
         name="edit" 
         options={{ 
-          href: null // Hide from tab bar
+          title: 'Éditer', 
+          href: null, 
         }} 
       />
       <Tabs.Screen 
         name="users" 
         options={{ 
           title: 'Utilisateurs', 
-          tabBarIcon: ({ color }) => <Users color={color} size={24} /> 
+          tabBarIcon: ({ color }) => <Profile2User color={color} size={24} variant="Linear" /> 
         }} 
       />
       <Tabs.Screen 
         name="settings" 
         options={{ 
           title: 'Paramètres', 
-          tabBarIcon: ({ color }) => <Settings color={color} size={24} /> 
+          tabBarIcon: ({ color }) => <Setting2 color={color} size={24} variant="Linear" /> 
         }} 
       />
     </Tabs>

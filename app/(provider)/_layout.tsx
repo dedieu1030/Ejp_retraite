@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { Settings, List, PlusCircle } from 'lucide-react-native';
+import { Setting2, ClipboardList, AddSquare } from 'iconsax-react-native';
 
 export default function ProviderLayout() {
   return (
@@ -8,28 +8,26 @@ export default function ProviderLayout() {
       screenOptions={{ 
         tabBarActiveTintColor: Colors.primary,
         headerShown: false,
-        tabBarStyle: { borderTopWidth: 1, borderTopColor: Colors.border, backgroundColor: Colors.background }
-      }}
-    >
+      }}>
       <Tabs.Screen 
         name="index" 
-        options={{ 
-          title: 'Mes Services', 
-          tabBarIcon: ({ color }) => <List color={color} size={24} /> 
+        options={{
+          title: 'Mes Services',
+          tabBarIcon: ({ color }) => <ClipboardList color={color} size={24} variant="Linear" />,
         }} 
       />
       <Tabs.Screen 
         name="create" 
-        options={{ 
-          title: 'Nouveau Service',
-          href: null, // Hide from tab bar
+        options={{
+          title: 'Nouveau',
+          tabBarIcon: ({ color }) => <AddSquare color={color} size={24} variant="Linear" />,
         }} 
       />
       <Tabs.Screen 
         name="settings" 
-        options={{ 
-          title: 'Paramètres', 
-          tabBarIcon: ({ color }) => <Settings color={color} size={24} /> 
+        options={{
+          title: 'Paramètres',
+          tabBarIcon: ({ color }) => <Setting2 color={color} size={24} variant="Linear" />,
         }} 
       />
     </Tabs>
