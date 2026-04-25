@@ -98,13 +98,16 @@ export default function ProviderSubmissionsScreen() {
                   onPress={() => onSelectProposal(p)}
                 >
                   <View style={styles.proposalRow}>
-                    <View style={[styles.proposalLeftBlock, { backgroundColor: '#E1E8F5' }]}>
-                      <Text style={styles.proposalLeftTitle} numberOfLines={2}>{p.title}</Text>
-                      <Text style={styles.proposalLeftPrice}>{p.price} €/h</Text>
-                    </View>
+                    <Image source={p.image} style={styles.proposalImage} />
                     
                     <View style={styles.proposalRightBlock}>
-                      <Text style={styles.proposalDescText} numberOfLines={3}>{p.description}</Text>
+                      <View style={styles.proposalTitleRow}>
+                        <Text style={styles.proposalTitle} numberOfLines={1}>{p.title}</Text>
+                        <Text style={styles.proposalPrice}>{p.price}€/h</Text>
+                      </View>
+                      
+                      <Text style={styles.proposalDescText} numberOfLines={2}>{p.description}</Text>
+                      
                       <View style={styles.proposalActionButton}>
                         <Text style={styles.proposalActionText}>Proposer</Text>
                       </View>
@@ -190,34 +193,41 @@ const styles = StyleSheet.create({
   },
   proposalRow: {
     flexDirection: 'row',
-    alignItems: 'stretch',
+    alignItems: 'center',
     gap: 16,
   },
-  proposalLeftBlock: {
-    width: 130,
-    height: 110,
+  proposalImage: {
+    width: 100,
+    height: 100,
     borderRadius: 16,
-    padding: 16,
-    justifyContent: 'space-between',
-  },
-  proposalLeftTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#000',
-  },
-  proposalLeftPrice: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#000',
+    backgroundColor: '#E1E8F5',
   },
   proposalRightBlock: {
     flex: 1,
+    height: 100,
     justifyContent: 'space-between',
     paddingVertical: 2,
   },
-  proposalDescText: {
+  proposalTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  proposalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#000',
+    flex: 1,
+  },
+  proposalPrice: {
     fontSize: 14,
-    color: '#4A4A4A',
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  proposalDescText: {
+    fontSize: 13,
+    color: '#666',
     lineHeight: 18,
   },
   proposalActionButton: {
