@@ -9,6 +9,13 @@ import { PROPOSALS } from '../../constants/Proposals';
 import { useState } from 'react';
 import CreateServiceModal from '../../components/CreateServiceModal';
 
+const serviceImages: Record<string, any> = {
+  'Jardinage': require('../../assets/proposals/jardinage.png'),
+  'Ménage': require('../../assets/proposals/menage.png'),
+  'Informatique': require('../../assets/proposals/informatique.png'),
+  'Courses': require('../../assets/proposals/courses.png'),
+};
+
 export default function ProviderSubmissionsScreen() {
   const { user } = useAuthStore();
   const { submissions, deleteSubmission } = useDataStore();
@@ -30,30 +37,37 @@ export default function ProviderSubmissionsScreen() {
 
   const ServiceCard = ({ item }: { item: Submission }) => (
     <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.serviceTag}>
-          <Briefcase size={18} color={Colors.primary} variant="Linear" />
-          <Text style={styles.serviceTagText}>{item.serviceType}</Text>
+      <View style={styles.activeCardHeader}>
+        <Image 
+          source={serviceImages[item.serviceType] || require('../../assets/proposals/courses.png')} 
+          style={styles.activeCardImage}
+        />
+        <View style={styles.activeCardTitleBlock}>
+          <View style={styles.serviceTag}>
+            <Briefcase size={14} color={Colors.primary} variant="Bold" />
+            <Text style={styles.serviceTagText}>{item.serviceType}</Text>
+          </View>
+          <Text style={styles.activePriceText}>{item.price} €</Text>
         </View>
-        <Text style={styles.priceText}>{item.price} €</Text>
       </View>
 
-      <View style={styles.locationRow}>
-        <Location size={18} color={Colors.textSecondary} variant="Linear" />
-        <Text style={styles.locationText}>{item.city}</Text>
+      <View style={styles.activeCardBody}>
+        <View style={styles.locationRow}>
+          <Location size={16} color={Colors.textSecondary} variant="Linear" />
+          <Text style={styles.locationText}>{item.city}</Text>
+        </View>
+        <Text style={styles.activeDescriptionText} numberOfLines={2}>{item.description}</Text>
       </View>
-
-      <Text style={styles.descriptionText} numberOfLines={2}>{item.description}</Text>
 
       <View style={styles.footer}>
         <View style={styles.statGroup}>
           <View style={styles.stat}>
-            <Text style={styles.statLabel}>Total</Text>
-            <Text style={styles.statValue}>{item.totalAmountRetirement} €</Text>
+            <Text style={styles.statLabel}>Financé</Text>
+            <Text style={styles.statValue}>{item.totalAmountRetirement}€</Text>
           </View>
           <View style={styles.stat}>
             <Text style={styles.statLabel}>Restant</Text>
-            <Text style={[styles.statValue, { color: Colors.danger }]}>{item.remainingAmount} €</Text>
+            <Text style={[styles.statValue, { color: Colors.danger }]}>{item.remainingAmount}€</Text>
           </View>
         </View>
         
@@ -62,7 +76,7 @@ export default function ProviderSubmissionsScreen() {
           onPress={() => deleteSubmission(item.id)}
           activeOpacity={0.7}
         >
-          <Trash size={22} color={Colors.danger} variant="Linear" />
+          <Trash size={20} color={Colors.danger} variant="Linear" />
         </TouchableOpacity>
       </View>
     </View>
@@ -268,30 +282,55 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   card: {
-    backgroundColor: Colors.card,
+    backgroundColor: '#fff',
     borderRadius: 24,
-    padding: 20,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 2,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+  },
+  activeCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     marginBottom: 16,
   },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+  activeCardImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+  },
+  activeCardTitleBlock: {
+    flex: 1,
+    gap: 4,
+  },
+  activePriceText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.text,
+  },
+  activeCardBody: {
+    marginBottom: 16,
+  },
+  activeDescriptionText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
   },
   serviceTag: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 82, 255, 0.08)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 8,
-    gap: 6,
+    gap: 4,
+    alignSelf: 'flex-start',
   },
   serviceTagText: {
     fontSize: 12,
