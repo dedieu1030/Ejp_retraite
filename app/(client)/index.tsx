@@ -5,7 +5,7 @@ import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/ui/Button';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Search, MapPin, Briefcase, Download } from 'lucide-react-native';
+import { SearchNormal1, Location, Briefcase, ExportCurve } from 'iconsax-react-native';
 
 export default function ClientServicesScreen() {
   const { submissions } = useDataStore();
@@ -43,6 +43,7 @@ export default function ClientServicesScreen() {
       
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(file.uri);
+        await Sharing.shareAsync(fileUri);
       } else {
         alert('Le partage n\'est pas disponible sur cet appareil');
       }
@@ -55,7 +56,7 @@ export default function ClientServicesScreen() {
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.serviceTag}>
-          <Briefcase size={14} color={Colors.primary} />
+          <Briefcase size={16} color={Colors.primary} variant="Linear" />
           <Text style={styles.serviceTagText}>{item.serviceType}</Text>
         </View>
         <Text style={styles.priceText}>{item.price} €</Text>
@@ -64,7 +65,7 @@ export default function ClientServicesScreen() {
       <Text style={styles.providerName}>{item.name}, {item.age} ans</Text>
       
       <View style={styles.locationRow}>
-        <MapPin size={14} color={Colors.textSecondary} />
+        <Location size={16} color={Colors.textSecondary} variant="Linear" />
         <Text style={styles.locationText}>{item.city}</Text>
       </View>
 
@@ -87,7 +88,7 @@ export default function ClientServicesScreen() {
       <View style={styles.header}>
         <View style={styles.searchContainer}>
           <View style={styles.searchInputWrapper}>
-            <Search size={18} color={Colors.textSecondary} style={styles.searchIcon} />
+            <SearchNormal1 size={18} color={Colors.textSecondary} style={styles.searchIcon} variant="Linear" />
             <TextInput 
               style={styles.searchInput} 
               placeholder="Ville..." 
@@ -109,7 +110,7 @@ export default function ClientServicesScreen() {
         </View>
         
         <TouchableOpacity style={styles.exportButton} onPress={exportToCSV}>
-          <Download size={20} color={Colors.primary} />
+          <ExportCurve size={20} color={Colors.primary} variant="Linear" />
           <Text style={styles.exportText}>CSV</Text>
         </TouchableOpacity>
       </View>

@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-import { Plus, Briefcase, MapPin, Trash2, User } from 'lucide-react-native';
+import { User, Briefcase, Location, Trash } from 'iconsax-react-native';
 import { PROPOSALS } from '../../constants/Proposals';
 
 export default function ProviderSubmissionsScreen() {
@@ -29,14 +29,14 @@ export default function ProviderSubmissionsScreen() {
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.serviceTag}>
-          <Briefcase size={14} color={Colors.primary} />
+          <Briefcase size={18} color={Colors.primary} variant="Linear" />
           <Text style={styles.serviceTagText}>{item.serviceType}</Text>
         </View>
         <Text style={styles.priceText}>{item.price} €</Text>
       </View>
 
       <View style={styles.locationRow}>
-        <MapPin size={14} color={Colors.textSecondary} />
+        <Location size={18} color={Colors.textSecondary} variant="Linear" />
         <Text style={styles.locationText}>{item.city}</Text>
       </View>
 
@@ -59,7 +59,7 @@ export default function ProviderSubmissionsScreen() {
           onPress={() => removeSubmission(item.id)}
           activeOpacity={0.7}
         >
-          <Trash2 size={20} color={Colors.danger} />
+          <Trash size={22} color={Colors.danger} variant="Linear" />
         </TouchableOpacity>
       </View>
     </View>
@@ -79,7 +79,7 @@ export default function ProviderSubmissionsScreen() {
             onPress={() => router.push('/(provider)/settings')}
           >
             <View style={styles.avatarContainer}>
-              <User color={Colors.primary} size={22} strokeWidth={2} />
+              <User color={Colors.primary} size={24} variant="Linear" />
             </View>
           </TouchableOpacity>
         </View>
@@ -125,7 +125,7 @@ export default function ProviderSubmissionsScreen() {
           onPress={() => router.push('/(provider)/create')}
           activeOpacity={0.8}
         >
-          <Plus color="#fff" size={30} />
+          <Add color="#fff" size={32} variant="Linear" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

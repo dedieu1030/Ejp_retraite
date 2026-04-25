@@ -6,7 +6,7 @@ import { Colors } from '../../constants/Colors';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Briefcase, Info } from 'lucide-react-native';
+import { Briefcase, InfoCircle } from 'iconsax-react-native';
 import { PROPOSALS } from '../../constants/Proposals';
 
 export default function FormScreen() {
@@ -70,10 +70,36 @@ export default function FormScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.sectionHeader}>
-          <Briefcase size={24} color={Colors.primary} />
-          <Text style={styles.sectionTitle}>Détails du service</Text>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Briefcase size={22} color={Colors.primary} variant="Linear" />
+            <Text style={styles.sectionTitle}>Type de service</Text>
+          </View>
+          
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.serviceTypes}>
+            {PROPOSALS.map((p) => (
+              <TouchableOpacity 
+                key={p.serviceType}
+                style={[
+                  styles.serviceTypeButton,
+                  serviceType === p.serviceType && styles.serviceTypeActive
+                ]}
+                onPress={() => setServiceType(p.serviceType)}
+              >
+                <Text style={[
+                  styles.serviceTypeText,
+                  serviceType === p.serviceType && styles.serviceTypeTextActive
+                ]}>{p.serviceType}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <InfoCircle size={22} color={Colors.primary} variant="Linear" />
+            <Text style={styles.sectionTitle}>Détails</Text>
+          </View>
 
         <Input label="Nom" value={name} onChangeText={setName} />
         <Input label="Âge" value={age} onChangeText={setAge} keyboardType="numeric" />
