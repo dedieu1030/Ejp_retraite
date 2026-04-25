@@ -2,9 +2,16 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useAuthStore } from '../../store/authStore';
 import { Button } from '../../components/ui/Button';
 import { Colors } from '../../constants/Colors';
+import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuthStore();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.replace('/');
+  };
 
   return (
     <View style={styles.container}>
@@ -15,7 +22,7 @@ export default function ProfileScreen() {
       <Text style={styles.role}>{user?.role}</Text>
       
       <View style={{ marginTop: 40, width: '100%' }}>
-        <Button title="Se déconnecter" variant="danger" onPress={logout} />
+        <Button title="Se déconnecter" variant="danger" onPress={handleLogout} />
       </View>
     </View>
   );
