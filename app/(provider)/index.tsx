@@ -9,7 +9,7 @@ import { PROPOSALS } from '../../constants/Proposals';
 
 export default function ProviderSubmissionsScreen() {
   const { user } = useAuthStore();
-  const { submissions, removeSubmission } = useDataStore();
+  const { submissions, deleteSubmission } = useDataStore();
   const router = useRouter();
 
   const mySubmissions = submissions.filter(sub => sub.providerId === user?.id);
@@ -56,7 +56,7 @@ export default function ProviderSubmissionsScreen() {
         
         <TouchableOpacity 
           style={styles.deleteButton} 
-          onPress={() => removeSubmission(item.id)}
+          onPress={() => deleteSubmission(item.id)}
           activeOpacity={0.7}
         >
           <Trash size={22} color={Colors.danger} variant="Linear" />

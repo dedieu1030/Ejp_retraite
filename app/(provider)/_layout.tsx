@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { Setting2, ClipboardList, AddSquare } from 'iconsax-react-native';
+import { Setting2, Clipboard, AddSquare } from 'iconsax-react-native';
 
 export default function ProviderLayout() {
   return (
@@ -13,7 +13,7 @@ export default function ProviderLayout() {
         name="index" 
         options={{
           title: 'Mes Services',
-          tabBarIcon: ({ color }) => <ClipboardList color={color} size={24} variant="Linear" />,
+          tabBarIcon: ({ color }) => <Clipboard color={color} size={24} variant="Linear" />,
         }} 
       />
       <Tabs.Screen 
