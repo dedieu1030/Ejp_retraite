@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image, Platform } from 'react-native';
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/ui/Button';
-import { File, Paths } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { SearchNormal1, Location, Briefcase, ExportCurve } from 'iconsax-react-native';
+import { SearchNormal1, Location, Briefcase, ExportCurve, Filter } from 'iconsax-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const serviceImages: Record<string, any> = {
+  'Jardinage': require('../../assets/proposals/jardinage.png'),
+  'Ménage': require('../../assets/proposals/menage.png'),
+  'Informatique': require('../../assets/proposals/informatique.png'),
+  'Courses': require('../../assets/proposals/courses.png'),
+};
 
 export default function ClientServicesScreen() {
   const { submissions } = useDataStore();
@@ -21,7 +29,7 @@ export default function ClientServicesScreen() {
   const exportToCSV = async () => {
     const header = 'Nom,Âge,Ville,Service,Description,Prix,Montant total,Montant disponible,Montant restant,Disponibilité,Contact\n';
     const csvData = filteredSubmissions.map(sub => {
-      const escape = (str: string) => `"${str.replace(/"/g, '""')}"`;
+      const escape = (str: string) => `"${(str || '').replace(/"/g, '""')}"`;
       return [
         escape(sub.name),
         escape(sub.age),
@@ -38,11 +46,10 @@ export default function ClientServicesScreen() {
     }).join('\n');
     
     try {
-      const file = new File(Paths.document, 'retraite_services.csv');
-      file.write(header + csvData);
+      const fileUri = FileSystem.documentDirectory + 'retraite_services.csv';
+      await FileSystem.writeAsStringAsync(fileUri, header + csvData, { encoding: FileSystem.EncodingType.UTF8 });
       
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(file.uri);
         await Sharing.shareAsync(fileUri);
       } else {
         alert('Le partage n\'est pas disponible sur cet appareil');
@@ -54,68 +61,74 @@ export default function ClientServicesScreen() {
 
   const ServiceCard = ({ item }: { item: Submission }) => (
     <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.serviceTag}>
-          <Briefcase size={16} color={Colors.primary} variant="Linear" />
-          <Text style={styles.serviceTagText}>{item.serviceType}</Text>
+      <Image 
+        source={serviceImages[item.serviceType] || serviceImages['Courses']} 
+        style={styles.cardImage}
+      />
+      <View style={styles.cardBody}>
+        <View style={styles.cardHeader}>
+          <View style={styles.serviceTag}>
+            <Briefcase size={14} color={Colors.primary} variant="Bold" />
+            <Text style={styles.serviceTagText}>{item.serviceType}</Text>
+          </View>
+          <Text style={styles.priceText}>{item.price}€</Text>
         </View>
-        <Text style={styles.priceText}>{item.price} €</Text>
-      </View>
-      
-      <Text style={styles.providerName}>{item.name}, {item.age} ans</Text>
-      
-      <View style={styles.locationRow}>
-        <Location size={16} color={Colors.textSecondary} variant="Linear" />
-        <Text style={styles.locationText}>{item.city}</Text>
-      </View>
-
-      <Text style={styles.descriptionText} numberOfLines={3}>{item.description}</Text>
-
-      <View style={styles.footer}>
-        <View style={styles.retirementBox}>
-          <Text style={styles.retirementLabel}>Reste à financer</Text>
-          <Text style={styles.remainingValue}>{item.remainingAmount} €</Text>
+        
+        <Text style={styles.providerName}>{item.name}, {item.age} ans</Text>
+        
+        <View style={styles.locationRow}>
+          <Location size={14} color={Colors.textSecondary} variant="Linear" />
+          <Text style={styles.locationText}>{item.city}</Text>
         </View>
-        <TouchableOpacity style={styles.contactButton} activeOpacity={0.7}>
-          <Text style={styles.contactButtonText}>Contacter</Text>
-        </TouchableOpacity>
+
+        <Text style={styles.descriptionText} numberOfLines={2}>{item.description}</Text>
+
+        <View style={styles.footer}>
+          <View style={styles.retirementBox}>
+            <Text style={styles.retirementLabel}>Aide retraite</Text>
+            <Text style={styles.remainingValue}>{item.remainingAmount}€</Text>
+          </View>
+          <TouchableOpacity style={styles.contactButton} activeOpacity={0.8}>
+            <Text style={styles.contactButtonText}>Contacter</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <View style={styles.searchInputWrapper}>
-            <SearchNormal1 size={18} color={Colors.textSecondary} style={styles.searchIcon} variant="Linear" />
-            <TextInput 
-              style={styles.searchInput} 
-              placeholder="Ville..." 
-              value={filterCity}
-              onChangeText={setFilterCity}
-              placeholderTextColor={Colors.textSecondary}
-            />
-          </View>
-          <View style={styles.searchInputWrapper}>
-            <Briefcase size={18} color={Colors.textSecondary} style={styles.searchIcon} />
-            <TextInput 
-              style={styles.searchInput} 
-              placeholder="Service..." 
-              value={filterService}
-              onChangeText={setFilterService}
-              placeholderTextColor={Colors.textSecondary}
-            />
-          </View>
-        </View>
-        
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.mainHeader}>
+        <Text style={styles.title}>Services disponibles</Text>
         <TouchableOpacity style={styles.exportButton} onPress={exportToCSV}>
-          <ExportCurve size={20} color={Colors.primary} variant="Linear" />
-          <Text style={styles.exportText}>CSV</Text>
+          <ExportCurve size={20} color={Colors.primary} variant="Bold" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.searchSection}>
+        <View style={styles.searchBar}>
+          <SearchNormal1 size={18} color={Colors.textSecondary} variant="Linear" />
+          <TextInput 
+            style={styles.searchInput} 
+            placeholder="Rechercher une ville ou un service..." 
+            value={filterCity || filterService}
+            onChangeText={(text) => {
+              // Simple unified search for better UX
+              setFilterCity(text);
+              setFilterService(text);
+            }}
+            placeholderTextColor={Colors.textSecondary}
+          />
+          <TouchableOpacity style={styles.filterButton}>
+            <Filter size={18} color={Colors.primary} variant="Bold" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {filteredSubmissions.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Aucun service trouvé</Text>
@@ -124,69 +137,92 @@ export default function ClientServicesScreen() {
           filteredSubmissions.map(sub => <ServiceCard key={sub.id} item={sub} />)
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#F8F9FE',
   },
-  header: {
-    padding: 16,
+  mainHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-  searchContainer: {
-    flex: 1,
-    gap: 8,
-  },
-  searchInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    height: 44,
-    paddingHorizontal: 12,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
     color: Colors.text,
+    letterSpacing: -0.5,
   },
-  exportButton: {
-    backgroundColor: Colors.card,
-    padding: 12,
-    borderRadius: 12,
+  searchSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  searchBar: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  exportText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: Colors.primary,
-  },
-  scrollContent: {
-    padding: 16,
-    gap: 16,
-  },
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 24,
-    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    height: 56,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 12,
+    fontSize: 16,
+    color: Colors.text,
+    fontWeight: '500',
+  },
+  filterButton: {
+    backgroundColor: '#F0F4FF',
+    padding: 8,
+    borderRadius: 10,
+  },
+  exportButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
     elevation: 2,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 0,
+    gap: 20,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  cardImage: {
+    width: '100%',
+    height: 160,
+    resizeMode: 'cover',
+  },
+  cardBody: {
+    padding: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -197,19 +233,19 @@ const styles = StyleSheet.create({
   serviceTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E1E8F5',
-    paddingHorizontal: 10,
+    backgroundColor: '#F0F4FF',
+    paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 10,
     gap: 6,
   },
   serviceTagText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
     color: Colors.primary,
   },
   priceText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
     color: Colors.text,
   },
@@ -222,17 +258,18 @@ const styles = StyleSheet.create({
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     marginBottom: 12,
   },
   locationText: {
     fontSize: 14,
     color: Colors.textSecondary,
+    fontWeight: '500',
   },
   descriptionText: {
-    fontSize: 15,
+    fontSize: 14,
     color: Colors.textSecondary,
-    lineHeight: 22,
+    lineHeight: 20,
     marginBottom: 20,
   },
   footer: {
@@ -240,39 +277,47 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: '#F0F0F0',
     paddingTop: 16,
   },
   retirementBox: {
     flex: 1,
   },
   retirementLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.textSecondary,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginBottom: 2,
   },
   remainingValue: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '800',
     color: Colors.danger,
   },
   contactButton: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 14,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
   },
   contactButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 15,
   },
   emptyContainer: {
-    padding: 40,
+    padding: 60,
     alignItems: 'center',
   },
   emptyText: {
     color: Colors.textSecondary,
     fontSize: 16,
+    fontWeight: '500',
   },
 });
