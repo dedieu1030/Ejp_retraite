@@ -141,14 +141,14 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 32,
     paddingBottom: 100,
-    paddingTop: 8,
+    paddingTop: 32, // More space after header
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 4, // Higher up
     paddingBottom: 8,
   },
   greetingText: {
