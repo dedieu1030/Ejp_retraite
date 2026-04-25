@@ -1,13 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-import { More } from 'iconsax-react-native';
+import { More, SearchNormal1, Trash, Edit2, User, Location, Briefcase } from 'iconsax-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AdminManagementScreen() {
   const { submissions, deleteSubmission } = useDataStore();
+  const [search, setSearch] = useState('');
   const router = useRouter();
+
+  const filteredSubmissions = submissions.filter(sub => 
+    sub.name.toLowerCase().includes(search.toLowerCase()) || 
+    sub.serviceType.toLowerCase().includes(search.toLowerCase()) ||
+    sub.city.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleDelete = (id: string) => {
     Alert.alert('Supprimer', 'Voulez-vous vraiment supprimer cette soumission ?', [
@@ -16,100 +24,231 @@ export default function AdminManagementScreen() {
     ]);
   };
 
-  const handleOptions = (item: Submission) => {
-    Alert.alert('Options', 'Que voulez-vous faire ?', [
-      { text: 'Éditer', onPress: () => router.push(`/(admin)/edit?id=${item.id}`) },
-      { text: 'Supprimer', style: 'destructive', onPress: () => handleDelete(item.id) },
-      { text: 'Annuler', style: 'cancel' },
-    ]);
+  const handleEdit = (id: string) => {
+    router.push(`/(admin)/edit?id=${id}`);
   };
 
-  const TableHeader = () => (
-    <View style={styles.headerRow}>
-      <Text style={[styles.headerCell, { flex: 1.5 }]}>SERVICE</Text>
-      <Text style={[styles.headerCell, { flex: 1 }]}>NOM</Text>
-      <Text style={[styles.headerCell, { flex: 1.5 }]}>DÉTAILS</Text>
-      <View style={{ width: 40, alignItems: 'center' }} />
-    </View>
-  );
+  const AdminCard = ({ item }: { item: Submission }) => (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <View style={styles.serviceInfo}>
+          <View style={styles.iconContainer}>
+            <Briefcase size={20} color={Colors.primary} variant="Bold" />
+          </View>
+          <View>
+            <Text style={styles.serviceName}>{item.serviceType}</Text>
+            <Text style={styles.providerName}>{item.name}</Text>
+          </View>
+        </View>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity 
+            style={styles.iconButton} 
+            onPress={() => handleEdit(item.id)}
+          >
+            <Edit2 size={18} color={Colors.primary} variant="Linear" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.iconButton, styles.deleteBtn]} 
+            onPress={() => handleDelete(item.id)}
+          >
+            <Trash size={18} color={Colors.danger} variant="Linear" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-  const TableRow = ({ item }: { item: Submission }) => (
-    <View style={styles.row}>
-      <Text style={[styles.cell, styles.primaryCell, { flex: 1.5 }]} numberOfLines={1}>{item.serviceType}</Text>
-      <Text style={[styles.cell, { flex: 1 }]} numberOfLines={1}>{item.name}</Text>
-      <Text style={[styles.cell, styles.descCell, { flex: 1.5 }]} numberOfLines={1}>{item.description}</Text>
-      <TouchableOpacity 
-        style={styles.actionCell} 
-        onPress={() => handleOptions(item)}
-      >
-        <More size={20} color={Colors.textSecondary} variant="Linear" />
-      </TouchableOpacity>
+      <View style={styles.cardDivider} />
+
+      <View style={styles.cardFooter}>
+        <View style={styles.infoRow}>
+          <Location size={14} color={Colors.textSecondary} variant="Linear" />
+          <Text style={styles.infoText}>{item.city}</Text>
+        </View>
+        <View style={styles.priceBadge}>
+          <Text style={styles.priceBadgeText}>{item.price}€</Text>
+        </View>
+      </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <TableHeader />
-      <ScrollView>
-        {submissions.length === 0 ? (
-            <Text style={styles.empty}>Aucune soumission à gérer.</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Gestion des Services</Text>
+        <Text style={styles.subtitle}>{submissions.length} soumission(s) au total</Text>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <View style={styles.searchBar}>
+          <SearchNormal1 size={18} color={Colors.textSecondary} />
+          <TextInput 
+            style={styles.searchInput}
+            placeholder="Rechercher un nom, service ou ville..."
+            value={search}
+            onChangeText={setSearch}
+            placeholderTextColor={Colors.textSecondary}
+          />
+        </View>
+      </View>
+
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {filteredSubmissions.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Aucun résultat trouvé</Text>
+          </View>
         ) : (
-            submissions.map(sub => <TableRow key={sub.id} item={sub} />)
+          filteredSubmissions.map(sub => <AdminCard key={sub.id} item={sub} />)
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    alignItems: 'center',
     backgroundColor: '#F8F9FA',
   },
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+  header: {
+    paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingHorizontal: 16,
-    alignItems: 'center',
   },
-  cell: {
-    fontSize: 14,
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
     color: Colors.text,
-    paddingRight: 8,
+    letterSpacing: -0.5,
   },
-  primaryCell: {
+  subtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginTop: 2,
     fontWeight: '500',
-    color: '#000',
   },
-  descCell: {
-    color: Colors.textSecondary,
+  searchContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
   },
-  headerCell: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    letterSpacing: 0.5,
-    paddingRight: 8,
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
   },
-  actionCell: {
-    width: 40,
-    alignItems: 'flex-end',
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 15,
+    color: Colors.text,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 0,
+    gap: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  serviceInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#F0F4FF',
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  empty: {
-    padding: 32,
-    textAlign: 'center',
+  serviceName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  providerName: {
+    fontSize: 13,
     color: Colors.textSecondary,
-  }
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F8F9FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteBtn: {
+    backgroundColor: '#FFF5F5',
+  },
+  cardDivider: {
+    height: 1,
+    backgroundColor: '#F1F3F5',
+    marginVertical: 12,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  infoText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+  priceBadge: {
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+  },
+  priceBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.text,
+  },
+  emptyContainer: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: Colors.textSecondary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
 });
