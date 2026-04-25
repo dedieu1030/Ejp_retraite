@@ -13,32 +13,32 @@ export default function RootLayout() {
   useEffect(() => {
     if (!navigationState?.key) return;
 
-    // Small delay to ensure navigation is ready
-    const timer = setTimeout(() => {
-      if (!user) {
-        // Always go to login if no user
-        router.replace('/');
-      } else {
-        // If user is logged in and at the root/login screen, redirect them to their dashboard
-        if (!segments[0] || segments[0] === 'index') {
-          if (user.role === 'Admin') router.replace('/(admin)');
-          else if (user.role === 'Client') router.replace('/(client)');
-          else if (user.role === 'Provider') router.replace('/(provider)');
-        }
-      }
-    }, 10);
+    const inAuthGroup = segments[0] === '(admin)' || segments[0] === '(client)' || segments[0] === '(provider)';
 
-    return () => clearTimeout(timer);
+    if (!user && inAuthGroup) {
+      // Only redirect to login if we are currently in a protected group
+      router.replace('/');
+    } else if (user && (!segments[0] || segments[0] === 'index')) {
+      // Only redirect to dashboard if we are at the login screen
+      if (user.role === 'Admin') router.replace('/(admin)');
+      else if (user.role === 'Client') router.replace('/(client)');
+      else if (user.role === 'Provider') router.replace('/(provider)');
+    }
   }, [user, segments[0], navigationState?.key]);
 
   return (
     <>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        {user?.role === 'Provider' && <Stack.Screen name="(provider)" />}
-        {user?.role === 'Client' && <Stack.Screen name="(client)" />}
-        {user?.role === 'Admin' && <Stack.Screen name="(admin)" />}
+        {!user ? (
+          <Stack.Screen name="index" />
+        ) : (
+          <>
+            {user.role === 'Provider' && <Stack.Screen name="(provider)" />}
+            {user.role === 'Client' && <Stack.Screen name="(client)" />}
+            {user.role === 'Admin' && <Stack.Screen name="(admin)" />}
+          </>
+        )}
       </Stack>
     </>
   );
