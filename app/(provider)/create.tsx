@@ -114,6 +114,7 @@ export default function FormScreen() {
         
         <Input label="Disponibilité" value={availability} onChangeText={setAvailability} placeholder="Ex: Week-ends, Soirées..." />
         <Input label="Contact (Email ou Tél)" value={contact} onChangeText={setContact} keyboardType="email-address" />
+        </View>
 
         <Button title="Soumettre le service" onPress={handleSubmit} style={{ marginTop: 20, marginBottom: 40 }} />
       </ScrollView>
