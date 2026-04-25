@@ -13,11 +13,18 @@ export default function RootLayout() {
   useEffect(() => {
     if (!navigationState?.key) return;
 
-    // We only need manual redirection for LOGIN or STARTUP (if already logged in)
-    // LOGOUT is handled automatically by the Stack re-rendering and removing protected routes
-    if (user && (!segments[0] || segments[0] === 'index')) {
-      const target = user.role === 'Admin' ? '/(admin)' : user.role === 'Client' ? '/(client)' : '/(provider)';
-      router.replace(target as any);
+    if (!user) {
+      // If no user, we must be at the root (index.tsx)
+      // If segments[0] is present, we are currently in a protected group, so redirect to root
+      if (segments[0]) {
+        router.replace('/');
+      }
+    } else {
+      // If user is logged in and at the root/login screen, redirect them to their dashboard
+      if (!segments[0] || segments[0] === 'index') {
+        const target = user.role === 'Admin' ? '/(admin)' : user.role === 'Client' ? '/(client)' : '/(provider)';
+        router.replace(target as any);
+      }
     }
   }, [user, segments[0], navigationState?.key]);
 

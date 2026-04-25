@@ -10,6 +10,7 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     logout();
+    router.replace('/');
   };
 
   return (
@@ -21,7 +22,12 @@ export default function ProfileScreen() {
       <Text style={styles.role}>{user?.role}</Text>
       
       <View style={{ marginTop: 40, width: '100%' }}>
-        <Button title="Se déconnecter" variant="danger" onPress={handleLogout} />
+        <Button 
+          title="Se déconnecter" 
+          variant="danger" 
+          onPress={handleLogout} 
+          style={{ borderRadius: 16, height: 56 }}
+        />
       </View>
     </View>
   );
