@@ -10,9 +10,7 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     logout();
-    setTimeout(() => {
-      router.push('/');
-    }, 100);
+    router.replace('/');
   };
 
   return (

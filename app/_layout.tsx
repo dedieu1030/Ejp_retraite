@@ -36,9 +36,9 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
-        <Stack.Screen name="(provider)" />
-        <Stack.Screen name="(client)" />
-        <Stack.Screen name="(admin)" />
+        {user?.role === 'Provider' && <Stack.Screen name="(provider)" />}
+        {user?.role === 'Client' && <Stack.Screen name="(client)" />}
+        {user?.role === 'Admin' && <Stack.Screen name="(admin)" />}
       </Stack>
     </>
   );
