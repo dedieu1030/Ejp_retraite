@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-import { Pencil, Trash2 } from 'lucide-react-native';
+import { More } from 'iconsax-react-native';
 
 export default function AdminManagementScreen() {
   const { submissions, deleteSubmission } = useDataStore();
@@ -16,46 +16,46 @@ export default function AdminManagementScreen() {
     ]);
   };
 
+  const handleOptions = (item: Submission) => {
+    Alert.alert('Options', 'Que voulez-vous faire ?', [
+      { text: 'Éditer', onPress: () => router.push(`/(admin)/edit?id=${item.id}`) },
+      { text: 'Supprimer', style: 'destructive', onPress: () => handleDelete(item.id) },
+      { text: 'Annuler', style: 'cancel' },
+    ]);
+  };
+
   const TableHeader = () => (
-    <View style={styles.row}>
-      <Text style={[styles.cell, styles.headerCell, { width: 100 }]}>Actions</Text>
-      <Text style={[styles.cell, styles.headerCell, { width: 120 }]}>Nom</Text>
-      <Text style={[styles.cell, styles.headerCell, { width: 150 }]}>Service</Text>
-      <Text style={[styles.cell, styles.headerCell, { width: 200 }]}>Description</Text>
-      <Text style={[styles.cell, styles.headerCell, { width: 100 }]}>Restant</Text>
+    <View style={styles.headerRow}>
+      <Text style={[styles.headerCell, { flex: 1.5 }]}>SERVICE</Text>
+      <Text style={[styles.headerCell, { flex: 1 }]}>NOM</Text>
+      <Text style={[styles.headerCell, { flex: 1.5 }]}>DÉTAILS</Text>
+      <View style={{ width: 40, alignItems: 'center' }} />
     </View>
   );
 
   const TableRow = ({ item }: { item: Submission }) => (
     <View style={styles.row}>
-      <View style={[styles.cell, { width: 100, flexDirection: 'row', gap: 12 }]}>
-        <TouchableOpacity onPress={() => router.push(`/(admin)/edit?id=${item.id}`)}>
-          <Pencil color={Colors.primary} size={20} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item.id)}>
-          <Trash2 color={Colors.danger} size={20} />
-        </TouchableOpacity>
-      </View>
-      <Text style={[styles.cell, { width: 120 }]}>{item.name}</Text>
-      <Text style={[styles.cell, { width: 150, fontWeight: 'bold' }]}>{item.serviceType}</Text>
-      <Text style={[styles.cell, { width: 200 }]} numberOfLines={2}>{item.description}</Text>
-      <Text style={[styles.cell, { width: 100, color: Colors.danger, fontWeight: 'bold' }]}>{item.remainingAmount} €</Text>
+      <Text style={[styles.cell, styles.primaryCell, { flex: 1.5 }]} numberOfLines={1}>{item.serviceType}</Text>
+      <Text style={[styles.cell, { flex: 1 }]} numberOfLines={1}>{item.name}</Text>
+      <Text style={[styles.cell, styles.descCell, { flex: 1.5 }]} numberOfLines={1}>{item.description}</Text>
+      <TouchableOpacity 
+        style={styles.actionCell} 
+        onPress={() => handleOptions(item)}
+      >
+        <More size={20} color={Colors.textSecondary} variant="Linear" />
+      </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <ScrollView horizontal style={styles.horizontalScroll}>
-        <View>
-          <TableHeader />
-          <ScrollView>
-            {submissions.length === 0 ? (
-               <Text style={styles.empty}>Aucune soumission à gérer.</Text>
-            ) : (
-               submissions.map(sub => <TableRow key={sub.id} item={sub} />)
-            )}
-          </ScrollView>
-        </View>
+      <TableHeader />
+      <ScrollView>
+        {submissions.length === 0 ? (
+            <Text style={styles.empty}>Aucune soumission à gérer.</Text>
+        ) : (
+            submissions.map(sub => <TableRow key={sub.id} item={sub} />)
+        )}
       </ScrollView>
     </View>
   );
@@ -66,8 +66,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  horizontalScroll: {
-    flex: 1,
+  headerRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
   },
   row: {
     flexDirection: 'row',
@@ -80,12 +86,26 @@ const styles = StyleSheet.create({
   cell: {
     fontSize: 14,
     color: Colors.text,
-    paddingRight: 16,
+    paddingRight: 8,
+  },
+  primaryCell: {
+    fontWeight: '500',
+    color: '#000',
+  },
+  descCell: {
+    color: Colors.textSecondary,
   },
   headerCell: {
+    fontSize: 11,
     fontWeight: '700',
     color: Colors.textSecondary,
-    marginBottom: 4,
+    letterSpacing: 0.5,
+    paddingRight: 8,
+  },
+  actionCell: {
+    width: 40,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   empty: {
     padding: 32,
