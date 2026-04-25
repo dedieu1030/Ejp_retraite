@@ -13,23 +13,23 @@ export default function RootLayout() {
   useEffect(() => {
     if (!navigationState?.key) return;
 
-    const inAuthGroup = segments[0] === '(admin)' || segments[0] === '(client)' || segments[0] === '(provider)';
-
-    // Use a small timeout to ensure the layout is fully mounted before navigating
+    // Small delay to ensure navigation is ready
     const timer = setTimeout(() => {
-      if (!user && inAuthGroup) {
+      if (!user) {
+        // Always go to login if no user
         router.replace('/');
-      } else if (user) {
+      } else {
+        // If user is logged in and at the root/login screen, redirect them to their dashboard
         if (!segments[0] || segments[0] === 'index') {
           if (user.role === 'Admin') router.replace('/(admin)');
           else if (user.role === 'Client') router.replace('/(client)');
           else if (user.role === 'Provider') router.replace('/(provider)');
         }
       }
-    }, 1);
+    }, 10);
 
     return () => clearTimeout(timer);
-  }, [user, segments, navigationState?.key]);
+  }, [user, segments[0], navigationState?.key]);
 
   return (
     <>
