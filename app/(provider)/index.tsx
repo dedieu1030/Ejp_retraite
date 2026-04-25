@@ -131,7 +131,7 @@ export default function ProviderSubmissionsScreen() {
           }}
           activeOpacity={0.8}
         >
-          <AddSquare color="#fff" size={32} variant="Linear" />
+          <AddSquare color={Colors.primary} size={64} variant="Bold" />
         </TouchableOpacity>
       </View>
       <CreateServiceModal 
@@ -353,16 +353,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 24,
     right: 24,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });
