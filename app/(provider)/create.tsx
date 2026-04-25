@@ -142,6 +142,34 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.text,
   },
+  section: {
+    marginBottom: 24,
+  },
+  serviceTypes: {
+    paddingBottom: 8,
+    gap: 12,
+  },
+  serviceTypeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#F2F5FA',
+    borderWidth: 1,
+    borderColor: '#E1E8F5',
+    marginRight: 12,
+  },
+  serviceTypeActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  serviceTypeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  serviceTypeTextActive: {
+    color: '#fff',
+  },
   divider: {
     height: 1,
     backgroundColor: Colors.border,
