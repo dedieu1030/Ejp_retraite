@@ -4,25 +4,28 @@ import { useAuthStore } from '../../store/authStore';
 import { useDataStore, Submission } from '../../store/dataStore';
 import { Colors } from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-import { User, Briefcase, Location, Trash, Add } from 'iconsax-react-native';
+import { User, Briefcase, Location, Trash, AddSquare } from 'iconsax-react-native';
 import { PROPOSALS } from '../../constants/Proposals';
+import { useState } from 'react';
+import CreateServiceModal from '../../components/CreateServiceModal';
 
 export default function ProviderSubmissionsScreen() {
   const { user } = useAuthStore();
   const { submissions, deleteSubmission } = useDataStore();
   const router = useRouter();
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [initialService, setInitialService] = useState<{serviceType?: string, description?: string, price?: string}>({});
+
   const mySubmissions = submissions.filter(sub => sub.providerId === user?.id);
 
   const onSelectProposal = (p: typeof PROPOSALS[0]) => {
-    router.push({
-      pathname: '/(provider)/create',
-      params: { 
-        serviceType: p.serviceType,
-        description: p.description,
-        price: p.price
-      }
+    setInitialService({
+      serviceType: p.serviceType,
+      description: p.description,
+      price: p.price
     });
+    setIsModalVisible(true);
   };
 
   const ServiceCard = ({ item }: { item: Submission }) => (
@@ -122,12 +125,22 @@ export default function ProviderSubmissionsScreen() {
 
         <TouchableOpacity 
           style={styles.fab} 
-          onPress={() => router.push('/(provider)/create')}
+          onPress={() => {
+            setInitialService({});
+            setIsModalVisible(true);
+          }}
           activeOpacity={0.8}
         >
-          <Add color="#fff" size={32} variant="Linear" />
+          <AddSquare color="#fff" size={32} variant="Linear" />
         </TouchableOpacity>
       </View>
+      <CreateServiceModal 
+        visible={isModalVisible} 
+        onClose={() => setIsModalVisible(false)}
+        initialServiceType={initialService.serviceType}
+        initialDescription={initialService.description}
+        initialPrice={initialService.price}
+      />
     </SafeAreaView>
   );
 }
